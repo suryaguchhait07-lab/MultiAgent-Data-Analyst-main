@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#081426">
+    <title>Master Mind | Web Threat Intelligence</title>
+    <style>
+        :root {
+            --bg: #081426;
+            --panel: #101f35;
+            --line: #263e5b;
+            --text: #edf5ff;
+            --muted: #9bb0c9;
+            --cyan: #52d6e8;
+            --green: #42d6a0;
+            --yellow: #ffc968;
+            --red: #ff7185
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 75% -10%, #173b61 0, transparent 35%), var(--bg);
+            color: var(--text);
+            font-family: Inter, system-ui, Segoe UI, Arial, sans-serif
+        }
+
+        .wrap {
+            max-width: 1120px;
+            margin: auto;
+            padding: 0 22px
+        }
+
+        nav {
+            height: 72px;
+            border-bottom: 1px solid #1b304b;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #081426ed;
+            z-index: 4
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%
+        }
+
+        .brand {
+            font-weight: 850;
+            letter-spacing: .13em
+        }
+
+        .brand i {
+            font-style: normal;
+            color: #061426;
+            background: linear-gradient(135deg, var(--cyan), #82a8ff);
+            padding: 9px 11px;
+            border-radius: 10px;
+            margin-right: 9px
+        }
+
+        .nav a {
+            color: var(--muted);
+            font-size: 13px;
+            text-decoration: none;
+            margin-left: 20px
+        }
+
+        .hero {
+            padding: 68px 0 42px
+        }
+
+        .eyebrow {
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .17em;
+            text-transform: uppercase
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 62px);
+            line-height: 1.04;
+            letter-spacing: -.045em;
+            margin: 14px 0
+        }
+
+        .hero h1 span {
+            color: var(--cyan)
+        }
+
+        .lead {
+            color: var(--muted);
+            line-height: 1.8;
+            max-width: 700px
+        }
+
+        .panel {
+            background: linear-gradient(145deg, #142b47, #0d1b30);
+            border: 1px solid #294461;
+            border-radius: 19px;
+            padding: 23px;
+            margin: 22px 0
+        }
+
+        .inputrow {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px
+        }
+
+        .inputrow input,
+        .report input,
+        .report textarea {
+            min-width: 0;
+            flex: 1;
+            background: #071426;
+            border: 1px solid #314c6b;
+            color: var(--text);
+            border-radius: 10px;
+            padding: 14px;
+            font: inherit
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 17px;
+            background: linear-gradient(100deg, var(--cyan), #83a7ff);
+            font-weight: 800;
+            color: #071629;
+            cursor: pointer
+        }
+
+        .btn:disabled {
+            opacity: .55;
+            cursor: wait
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .result {
+            display: none;
+            border-top: 1px solid var(--line);
+            margin-top: 20px;
+            padding-top: 18px
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        .score {
+            font-size: 34px;
+            font-weight: 850
+        }
+
+        .pill {
+            border-radius: 30px;
+            padding: 7px 11px;
+            font-size: 11px;
+            font-weight: 800
+        }
+
+        .low {
+            background: #123a35;
+            color: var(--green)
+        }
+
+        .mid {
+            background: #44351b;
+            color: var(--yellow)
+        }
+
+        .high {
+            background: #45212d;
+            color: var(--red)
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 16px
+        }
+
+        .item {
+            background: #0a192c;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 13px
+        }
+
+        .item b {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px
+        }
+
+        .item p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55
+        }
+
+        .warn {
+            background: #302719;
+            border: 1px solid #66502b;
+            color: #e6c98d;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 11px;
+            line-height: 1.55;
+            margin-top: 14px
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 13px;
+            margin: 20px 0
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            padding: 18px
+        }
+
+        .card .ico {
+            font-size: 22px;
+            color: var(--cyan)
+        }
+
+        .card h3 {
+            font-size: 15px
+        }
+
+        .card p {
+            font-size: 12px;
+            line-height: 1.65;
+            color: var(--muted)
+        }
+
+        section {
+            padding: 25px 0
+        }
+
+        h2 {
+            font-size: 25px
+        }
+
+        .report {
+            display: grid;
+            gap: 10px
+        }
+
+        .report textarea {
+            min-height: 90px
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px
+        }
+
+        .stat {
+            background: #0b1a2d;
+            border: 1px solid var(--line);
+            padding: 14px;
+            border-radius: 12px
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 25px
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 11px
+        }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            padding: 25px 0 35px;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 35px
+        }
+
+        @media(max-width:700px) {
+            .cards {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .inputrow {
+                flex-direction: column
+            }
+
+            .inputrow button {
+                width: 100%
+            }
+
+            .nav a {
+                display: none
+            }
+        }
+
+        @media(max-width:480px) {
+
+            .cards,
+            .grid,
+            .stats {
+                grid-template-columns: 1fr
+            }
+
+            .wrap {
+                padding: 0 15px
+            }
+
+            .hero {
+                padding-top: 45px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="wrap nav">
+            <div class="brand"><i>✦</i>MASTER MIND</div>
+            <div><a href="#scanner">Scanner</a><a href="#features">Features</a><a href="#report">Report threat</a></div>
+        </div>
+    </nav>
+    <main class="wrap">
+        <header class="hero">
+            <div class="eyebrow">AI-powered web threat intelligence</div>
+            <h1>Verify links.<br><span>Protect trust.</span></h1>
+            <p class="lead">A unified website security platform concept combining phishing indicators, DNS and domain
+                analysis, SSL/TLS validation, explainable risk scoring and community threat reporting.</p>
+        </header>
+        <section id="scanner">
+            <h2>Website risk scanner</h2>
+            <p class="muted">Enter a URL for a server-side MVP scan. Only public destinations are accepted.</p>
+            <div class="panel"><b>Analyse a website</b>
+                <div class="inputrow"><input id="url" placeholder="https://example.com" autocomplete="url"><button
+                        class="btn" id="scan">Analyse URL →</button></div>
+                <p class="muted">Do not enter passwords, payment details or private links.</p>
+                <div id="message" class="muted" role="status"></div>
+                <div class="result" id="result">
+                    <div class="top">
+                        <div>
+                            <div class="eyebrow">Risk indicator score</div>
+                            <div class="score" id="score">--/100</div>
+                        </div><span id="category" class="pill">—</span>
+                    </div>
+                    <div class="grid" id="findings"></div>
+                    <div class="grid" id="tech"></div>
+                    <div class="warn" id="limits"></div>
+                </div>
+            </div>
+        </section>
+        <section id="features">
+            <h2>Integrated security modules</h2>
+            <div class="cards">
+                <article class="card">
+                    <div class="ico">⌕</div>
+                    <h3>Phishing indicators</h3>
+                    <p>Explainable URL heuristics identify suspicious words, long hostnames, punycode and other weak
+                        signals.</p>
+                </article>
+                <article class="card">
+                    <div class="ico">◎</div>
+                    <h3>Domain intelligence</h3>
+                    <p>Resolve public DNS records and prepare for reputation-feed integration.</p>
+                </article>
+                <article class="card">
+                    <div class="ico">▣</div>
+                    <h3>SSL/TLS validation</h3>
+                    <p>Perform a real TLS handshake and hostname verification for public HTTPS hosts.</p>
+                </article>
+                <article class="card">
+                    <div class="ico">⌘</div>
+                    <h3>Security assessment</h3>
+                    <p>Architecture supports safe, authorised checks for web security configuration.</p>
+                </article>
+                <article class="card">
+                    <div class="ico">♧</div>
+                    <h3>Community reports</h3>
+                    <p>Submit suspicious URLs for moderation; reports are stored as pending.</p>
+                </article>
+                <article class="card">
+                    <div class="ico">▤</div>
+                    <h3>Explainable results</h3>
+                    <p>Review findings, risk indicators, certificate details and important limitations.</p>
+                </article>
+            </div>
+        </section>
+        <section id="report">
+            <h2>Community threat report</h2>
+            <p class="muted">Submit a suspicious URL and a short reason. Reports are stored for moderator review.</p>
+            <div class="panel report"><input id="reportUrl" placeholder="https://suspicious.example"><textarea
+                    id="reason" placeholder="Why do you think this URL is suspicious?"></textarea><button class="btn"
+                    id="submitReport">Submit report</button>
+                <div id="reportMsg" class="muted" role="status"></div>
+            </div>
+        </section>
+        <section>
+            <h2>Platform activity</h2>
+            <div class="stats">
+                <div class="stat"><strong id="scans">—</strong><span>Total scans</span></div>
+                <div class="stat"><strong id="reports">—</strong><span>Community reports</span></div>
+                <div class="stat"><strong id="pending">—</strong><span>Pending moderation</span></div>
+            </div>
+        </section>
+        <footer class="footer">© 2026 MASTER MIND · Hackathon MVP · A screening aid, not a guarantee of website safety.
+        </footer>
+    </main>
+    <script>
+        const $ = id => document.getElementById(id);
+        function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+        async function api(path, body) { const r = await fetch(path, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined }); let d; try { d = await r.json() } catch { d = { detail: 'Unexpected server response' } } if (!r.ok) throw new Error(d.detail || 'Request failed'); return d }
+        async function stats() { try { const d = await api('/api/stats'); $('scans').textContent = d.total_scans; $('reports').textContent = d.community_reports; $('pending').textContent = d.pending_reports } catch { } }
+        $('scan').onclick = async () => { const b = $('scan'); b.disabled = true; $('message').textContent = 'Analysing…'; $('result').style.display = 'none'; try { const d = await api('/api/scan', { url: $('url').value }); $('score').textContent = d.risk_score + '/100'; $('category').textContent = d.category; $('category').className = 'pill ' + (d.risk_score < 30 ? 'low' : d.risk_score < 60 ? 'mid' : 'high'); $('findings').innerHTML = (d.findings.length ? d.findings.map(x => `<div class="item"><b>${esc(x.title)} · +${x.points}</b><p>${esc(x.detail)}</p></div>`).join('') : '<div class="item"><b>No URL heuristic flags</b><p>No indicators were detected by the basic URL rules. This does not prove safety.</p></div>'); const t = d.tls || {}; $('tech').innerHTML = `<div class="item"><b>DNS</b><p>${esc(d.dns.status)} · ${esc((d.dns.public_addresses || []).join(', ') || 'No public addresses returned')}</p></div><div class="item"><b>TLS certificate</b><p>${esc(t.status)} · ${esc(t.detail || 'Not checked')}</p></div><div class="item"><b>TLS version</b><p>${esc(t.tls_version || 'Not available')} · ${esc(t.cipher || '')}</p></div><div class="item"><b>Certificate expiry</b><p>${esc(t.expires_at || 'Not available')} · ${esc(t.days_until_expiry ?? '—')} days remaining</p></div>`; $('limits').textContent = (d.limitations || []).join(' '); $('result').style.display = 'block'; $('message').textContent = 'Scan completed.'; stats() } catch (e) { $('message').textContent = e.message } finally { b.disabled = false } };
+        $('url').addEventListener('keydown', e => { if (e.key === 'Enter') $('scan').click() });
+        $('submitReport').onclick = async () => { const b = $('submitReport'); b.disabled = true; $('reportMsg').textContent = 'Submitting…'; try { const d = await api('/api/reports', { url: $('reportUrl').value, reason: $('reason').value }); $('reportMsg').textContent = `${d.message} Reference #${d.report_id}`; $('reportUrl').value = ''; $('reason').value = ''; stats() } catch (e) { $('reportMsg').textContent = e.message } finally { b.disabled = false } };
+        stats();
+    </script>
+</body>
+
+</html>
